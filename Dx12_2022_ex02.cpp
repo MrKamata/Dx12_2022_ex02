@@ -497,9 +497,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	scissorrect.right = scissorrect.left + window_width; // 切り抜き右座標
 	scissorrect.bottom = scissorrect.top + window_height; // 切り抜き下座標
 
+	int frame = 0;
+
 	MSG	msg = {};
 	// Chapter4_10_3
-	float clearColor[] = { 0.125f, 0.125f, 0.125f, 1.0f }; //黄色
+	float clearColor[] = { 0.0f, 1.0f, 0.125f, 1.0f }; //黄色
 
 	while (true) {
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
@@ -510,6 +512,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		if (msg.message == WM_QUIT) {
 			break;
 		}
+
+		frame++;
 
 		// Chapter3_3_6
 		// スワップチェーンを動作
@@ -531,6 +535,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		auto rtvH = rtvHeaps->GetCPUDescriptorHandleForHeapStart();
 		rtvH.ptr += bbIdx * _dev->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 		_cmdList->OMSetRenderTargets(1, &rtvH, true, nullptr);
+		clearColor[0] = clearColor[0] + 1.0f/128.0f;
+		if (clearColor[0] > 1.0f)
+		{
+			clearColor[0] = 0.0f;
+		}
+
+		clearColor[0] = sin(frame / 16.0f);
 		_cmdList->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
 
 
